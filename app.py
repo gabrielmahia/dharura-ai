@@ -8,6 +8,17 @@ st.markdown("""<style>.stApp{background:#0a0000;color:#ffebee}
 </style>""", unsafe_allow_html=True)
 SYS = "Wewe ni mshauri wa dharura na uokoaji Kenya. Toa habari za wazi za kuokoa maisha kwa Kiswahili. Kama kuna hatari ya papo hapo, toa nambari za dharura kwanza kabla ya kitu kingine chochote."
 API_KEY = st.secrets.get("GOOGLE_API_KEY") or st.secrets.get("GEMINI_API_KEY","")
+
+# ── Public-facing service availability check ──────────────────────────────────
+if not API_KEY:
+    st.warning(
+        "⚠️ **Huduma hii haipo tayari katika toleo hili la majaribio.**\n\n"
+        "Tunaendelea kuboresha. Rudi baadaye au wasiliana na msimamizi.\n\n"
+        "_This service is not yet available in this demo version. "
+        "We are working on it — please check back soon._"
+    )
+    st.stop()
+
 def ask(q):
     if not API_KEY: return "❌ API key not configured."
     url=f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={API_KEY}"
