@@ -1,5 +1,5 @@
 import streamlit as st
-import urllib.request, json
+import html, os, urllib.request, json
 st.set_page_config(page_title="Dharura AI — Maandalizi ya Dharura", page_icon="🆘", layout="centered")
 st.markdown("""<style>.stApp{background:#0a0000;color:#ffebee}
 .d-card{background:#1a0000;border:1px solid #b71c1c;border-radius:10px;padding:14px 18px;margin:8px 0}
@@ -7,8 +7,16 @@ st.markdown("""<style>.stApp{background:#0a0000;color:#ffebee}
 .stButton>button{background:#b71c1c;color:#fff;border:none;border-radius:8px;padding:10px 24px;font-weight:700;width:100%}
 </style>""", unsafe_allow_html=True)
 SYS = "Wewe ni mshauri wa dharura na uokoaji Kenya. Toa habari za wazi za kuokoa maisha kwa Kiswahili. Kama kuna hatari ya papo hapo, toa nambari za dharura kwanza kabla ya kitu kingine chochote."
-API_KEY = st.secrets.get("GOOGLE_API_KEY") or st.secrets.get("GEMINI_API_KEY","")
+def _secret(name):
+    """Read a Streamlit secret, falling back to the environment; never crash when no secrets file exists."""
+    try:
+        v = st.secrets.get(name)
+    except Exception:
+        v = None
+    return v or os.environ.get(name, "")
 
+API_KEY = _secret("GOOGLE_API_KEY") or _secret("GEMINI_API_KEY")
+MODEL = _secret("GEMINI_MODEL") or "gemini-3.5-flash-lite"  # the 1.5 Flash model this app used was retired by Google
 # ── Public-facing service availability check ──────────────────────────────────
 if not API_KEY:
     st.warning(
@@ -21,14 +29,14 @@ if not API_KEY:
 
 def ask(q):
     if not API_KEY: return "❌ API key not configured."
-    url=f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={API_KEY}"
+    url=f"https://generativelanguage.googleapis.com/v1beta/models/{MODEL}:generateContent"
     body={"contents":[{"role":"user","parts":[{"text":q}]}],"systemInstruction":{"parts":[{"text":SYS}]},"generationConfig":{"temperature":0.1,"maxOutputTokens":600}}
     try:
-        req=urllib.request.Request(url,data=json.dumps(body).encode(),headers={"Content-Type":"application/json"},method="POST")
-        with urllib.request.urlopen(req,timeout=30) as r: return json.loads(r.read())["candidates"][0]["content"]["parts"][0]["text"]
-    except Exception as e: return f"❌ {e}"
+        req=urllib.request.Request(url,data=json.dumps(body).encode(),headers={"Content-Type":"application/json","x-goog-api-key":API_KEY},method="POST")
+        with urllib.request.urlopen(req,timeout=30) as r: return html.escape(json.loads(r.read())["candidates"][0]["content"]["parts"][0]["text"])
+    except Exception as e: return html.escape(f"❌ {e}")
 st.markdown("# 🆘 Dharura AI"); st.markdown("**Maandalizi ya Dharura Kenya**")
-st.markdown('<div class="d-card">🚨 NAMBARI ZA DHARURA:<br>🔴 Polisi: 999 / 0800 722 203<br>🚒 Zima Moto: 020 222 2181<br>🏥 Ambulance: 1199 / 0800 723 253<br>🌊 NDMA Floods: 020 271 4099</div>',unsafe_allow_html=True)
+st.markdown('<div class="d-card">🚨 NAMBARI ZA DHARURA:<br>🔴 Polisi: 999 / 0800 722 203<br>🚒 Zima Moto: 020 222 2181<br>🏥 Ambulance (Kenya Red Cross): 1199<br>🌊 Mafuriko: 999 / 1199 · ndma.go.ke<br>🆘 Dharura ya jumla: 999 / 112</div>',unsafe_allow_html=True)
 tab1,tab2,tab3=st.tabs(["🌊 Mafuriko","🔥 Moto","🏥 Msaada wa Kwanza"])
 with tab1:
     county=st.selectbox("Kaunti yako:",["Nairobi","Kisumu","Tana River","Turkana","Garissa","Mombasa","Nakuru"])
