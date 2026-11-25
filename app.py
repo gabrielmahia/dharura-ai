@@ -36,7 +36,7 @@ def ask(q):
         with urllib.request.urlopen(req,timeout=30) as r: return html.escape(json.loads(r.read())["candidates"][0]["content"]["parts"][0]["text"])
     except Exception as e: return html.escape(f"❌ {e}")
 st.markdown("# 🆘 Dharura AI"); st.markdown("**Maandalizi ya Dharura Kenya**")
-st.markdown('<div class="d-card">🚨 NAMBARI ZA DHARURA:<br>🔴 Polisi: 999 / 0800 722 203<br>🚒 Zima Moto: 020 222 2181<br>🏥 Ambulance (Kenya Red Cross): 1199<br>🌊 Mafuriko: 999 / 1199 · ndma.go.ke<br>🆘 Dharura ya jumla: 999 / 112</div>',unsafe_allow_html=True)
+st.markdown('<div class="d-card">🚨 NAMBARI ZA DHARURA:<br>🔴 Polisi: 999 / 112<br>🚒 Zima Moto: 999 / 112<br>🏥 Ambulance (Kenya Red Cross): 1199<br>🌊 Mafuriko: 999 / 1199 · ndma.go.ke<br>🆘 Dharura ya jumla: 999 / 112</div>',unsafe_allow_html=True)
 tab1,tab2,tab3=st.tabs(["🌊 Mafuriko","🔥 Moto","🏥 Msaada wa Kwanza"])
 with tab1:
     county=st.selectbox("Kaunti yako:",["Nairobi","Kisumu","Tana River","Turkana","Garissa","Mombasa","Nakuru"])
