@@ -53,4 +53,4 @@ with tab3:
     if st.button("🏥 Msaada wa Kwanza",key="f3"):
         with st.spinner("..."): r=ask(f"Msaada wa kwanza kwa {aid_type}. Hatua 1-2-3 za haraka kabla daktari hawajafika. Ni lini kupiga simu 1199.")
         st.markdown(f'<div class="green-card">{r.replace(chr(10),"<br>")}</div>',unsafe_allow_html=True)
-st.markdown("---"); st.caption("🆘 Dharura AI v1.0 | NDMA: ndma.go.ke | KRC: redcross.or.ke | Polisi: 999 | CC BY-NC-ND 4.0")
+st.markdown("---"); st.caption("🆘 Dharura AI v1.0 | NDMA: ndma.go.ke | KRC: redcross.or.ke | Polisi: 999 | MIT")
